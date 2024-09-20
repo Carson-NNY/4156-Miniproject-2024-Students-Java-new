@@ -1,8 +1,6 @@
 package dev.coms4156.project.individualproject;
 
 import static org.hamcrest.Matchers.*;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -13,8 +11,6 @@ import static org.mockito.BDDMockito.given;
 
 
 import org.junit.jupiter.api.*;
-import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -26,7 +22,6 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
 import java.util.HashMap;
-import java.util.Map;
 
 /**
  * the tests ensures the functionality of the RouteController.
@@ -88,7 +83,7 @@ public class RouteControllerTest {
   }
 
   @Test
-  void retrieveCoursesFromAllDeptTest() throws Exception  {
+  void retrieveCoursesTest() throws Exception  {
 
     String courseCode = "2500";
     String expectedStr = "\nInstructor: Uday Menon; Location: 627 MUDD; Time: 11:40-12:55";
@@ -117,15 +112,15 @@ public class RouteControllerTest {
   }
 
   @Test
-  void retrieveCoursesFromAllDeptTestWithInvalidArgs() throws Exception {
-    String invalidCourseCode = "99999921";
+  void retrieveCoursesTestWithInvalidArgs() throws Exception {
+    String invalidCourseCode = "@@22222";
     String negativeCourseCode2 = "-1";
 
     // case1: no course found with the given course code
     mockMvc.perform(get("/retrieveCourses")
             .param("courseCode", invalidCourseCode))
-        .andExpect(status().isNotFound())
-        .andExpect(content().string("Courses Not Found"));
+        .andExpect(status().isBadRequest())
+        .andExpect(content().string("Invalid courseCode"));
 
     // case2: invalid negative course code
     mockMvc.perform(get("/retrieveCourses")
@@ -136,7 +131,7 @@ public class RouteControllerTest {
   }
 
   @Test
-  void retrieveCoursesFromAllDeptTestWithNullDepartment() throws Exception {
+  void retrieveCoursesTestWithNullDepartment() throws Exception {
     MyFileDatabase savedDatabase = IndividualProjectApplication.myFileDatabase;
 
     // case1: when the department mapping is null
