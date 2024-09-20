@@ -111,17 +111,6 @@ public class RouteController {
       @RequestParam(COURSE_CODE) String courseCode) {
 
     try {
-      int Code = Integer.parseInt(courseCode);
-      if (Code < 0) {
-        return ResponseEntity.badRequest().body("Invalid courseCode");
-      }
-
-    } catch (NumberFormatException e) {
-      return ResponseEntity.badRequest().body("Invalid courseCode");
-    }
-
-
-    try {
       Map<String, Department> departmentMapping;
       departmentMapping = IndividualProjectApplication.myFileDatabase.getDepartmentMapping();
 
@@ -134,19 +123,22 @@ public class RouteController {
       List<String> courseList = new ArrayList<>();
 
       for (Department department : departmentMapping.values()) {
-        if (department == null) {
+        if (department == null || department.getDeptCode() == null) {
           continue;
         }
+
+        boolean doesCourseExist =
+            retrieveCourse(department.getDeptCode(), courseCode).getStatusCode() == HttpStatus.OK;
 
         coursesMapping = department.getCourseSelection();
-        if (coursesMapping == null || coursesMapping.isEmpty()) {
+
+        if (!doesCourseExist
+            || coursesMapping == null
+            || coursesMapping.isEmpty()
+            || !coursesMapping.containsKey(courseCode)) {
           continue;
         }
-
-
-        if (coursesMapping.containsKey(courseCode)) {
-          courseList.add(coursesMapping.get(courseCode).toString());
-        }
+        courseList.add(coursesMapping.get(courseCode).toString());
       }
 
       if (courseList.isEmpty()) {
@@ -496,7 +488,7 @@ public class RouteController {
       @RequestParam(COURSE_CODE) String courseCode,
       @RequestParam("count") int count) {
     try {
-      if(count < 0) {
+      if (count < 0) {
         return new ResponseEntity<>("Invalid count", HttpStatus.BAD_REQUEST);
       }
 
@@ -521,15 +513,45 @@ public class RouteController {
   }
 
 
-//  @PatchMapping(value = "/enrollStudentInCourse", produces = MediaType.APPLICATION_JSON_VALUE)
-//  public ResponseEntity<?> setEnrollmentCount (
-//      @RequestParam(DEPT_CODE) String deptCode,
-//      @RequestParam(COURSE_CODE) String courseCode){
-//    try {
-//
-//    }
-//
-//  }
+  @PatchMapping(value = "/enrollStudentInCourse", produces = MediaType.APPLICATION_JSON_VALUE)
+  public ResponseEntity<?> enrollStudentInCourse (
+      @RequestParam(DEPT_CODE) String deptCode,
+      @RequestParam(COURSE_CODE) String courseCode){
+    try {
+      boolean doesCourseExists;
+      doesCourseExists = retrieveCourse(deptCode, courseCode).getStatusCode() == HttpStatus.OK;
+
+      if (doesCourseExists) {
+
+        Map<String, Department> departmentMapping;
+        departmentMapping = IndividualProjectApplication.myFileDatabase.getDepartmentMapping();
+        if (departmentMapping == null || departmentMapping.isEmpty() ) {
+          return new ResponseEntity<>("No department exists", HttpStatus.NOT_FOUND);
+        }
+
+        Map<String, Course> coursesMapping;
+        coursesMapping = departmentMapping.get(deptCode).getCourseSelection();
+        if(coursesMapping == null || coursesMapping.isEmpty() || !coursesMapping.containsKey(courseCode)){
+          return new ResponseEntity<>("Course Not Found", HttpStatus.NOT_FOUND);
+        }
+
+        Course targetCourse = coursesMapping.get(courseCode);
+        boolean isStudentEnrolled = targetCourse.enrollStudent();
+
+        if (isStudentEnrolled) {
+          return new ResponseEntity<>(
+              generateResponse( "Student has been enrolled successfully."), HttpStatus.OK);
+        } else {
+          return new ResponseEntity<>(
+              generateResponse("Student has not been enrolled."), HttpStatus.CONFLICT);
+        }
+      } else {
+        return new ResponseEntity<>("Course Not Found", HttpStatus.NOT_FOUND);
+      }
+    } catch (Exception e) {
+      return handleException(e);
+    }
+  }
 
   /**
    * Endpoint for changing the time of a course.
@@ -656,6 +678,12 @@ public class RouteController {
   private ResponseEntity<?> handleException(Exception e) {
     System.out.println(e.toString());
     return new ResponseEntity<>("An Error has occurred", HttpStatus.INTERNAL_SERVER_ERROR);
+  }
+
+  private Map<String,  String> generateResponse(String message) {
+    Map<String, String> response = new HashMap<>();
+    response.put("message", message);
+    return response;
   }
 
   private static final String DEPT_CODE = "deptCode";

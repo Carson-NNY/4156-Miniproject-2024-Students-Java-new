@@ -64,7 +64,6 @@ public class RouteControllerTest {
         .andExpect(status().isNotFound());
   }
 
-
   @Test
   public void retrieveCourseTest() throws Exception {
     String deptCode = "IEOR";
@@ -112,22 +111,14 @@ public class RouteControllerTest {
   }
 
   @Test
-  void retrieveCoursesTestWithInvalidArgs() throws Exception {
+  void retrieveCoursesTestNotFound() throws Exception {
     String invalidCourseCode = "@@22222";
-    String negativeCourseCode2 = "-1";
 
-    // case1: no course found with the given course code
+    // case: no course found with the given course code
     mockMvc.perform(get("/retrieveCourses")
             .param("courseCode", invalidCourseCode))
-        .andExpect(status().isBadRequest())
-        .andExpect(content().string("Invalid courseCode"));
-
-    // case2: invalid negative course code
-    mockMvc.perform(get("/retrieveCourses")
-            .param("courseCode", negativeCourseCode2))
-        .andExpect(status().isBadRequest())
-        .andExpect(content().string("Invalid courseCode"));
-
+        .andExpect(status().isNotFound())
+        .andExpect(content().string("Courses Not Found"));
   }
 
   @Test

@@ -119,6 +119,15 @@ public class Department implements Serializable {
     return result.toString();
   }
 
+  /**
+   * Gets the dept code for the department.
+   *
+   * @return the deptCode of the department.
+   */
+  public String getDeptCode() {
+    return deptCode;
+  }
+
   @Serial
   private static final long serialVersionUID = 234567L;
   private Map<String, Course> courses;
