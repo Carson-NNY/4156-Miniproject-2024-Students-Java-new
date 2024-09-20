@@ -31,8 +31,7 @@ public class CourseUnitTests {
     assertEquals(200,  testCourse2.getCapacity());
 
     // test invalid input: negative capacity
-    Course testCourse3 = new Course("Griffin Newbold", "417 IAB", "11:40-12:55", -1);
-    assertEquals(0,  testCourse3.getCapacity());
+    assertThrows(IllegalArgumentException.class, () -> new Course("Griffin Newbold", "417 IAB", "11:40-12:55", -1));
   }
 
   @Test

@@ -1,8 +1,7 @@
 package dev.coms4156.project.individualproject;
 
-import java.util.HashMap;
-import java.util.Locale;
-import java.util.Map;
+import java.util.*;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -90,6 +89,66 @@ public class RouteController {
         }
       }
       return new ResponseEntity<>("Department Not Found", HttpStatus.NOT_FOUND);
+    } catch (Exception e) {
+      return handleException(e);
+    }
+  }
+
+
+  /**
+   * Displays the string representation of the requested courses from all the departments or
+   * displays the proper error message in response to the request.
+   *
+   * @param courseCode A {@code int} representing the course the user wishes
+   *                   to retrieve.
+   *
+   * @return           A {@code ResponseEntity} object containing either the map containing
+   *                   string representation of the course from all departments and an HTTP
+   *                   200 response or, an appropriate message indicating the proper response.
+   */
+  @GetMapping(value = "/retrieveCourses", produces = MediaType.APPLICATION_JSON_VALUE)
+  public ResponseEntity<?> retrieveCourses(
+      @RequestParam(COURSE_CODE) int courseCode) {
+
+    if (courseCode < 0) {
+      return new ResponseEntity<>("Invalid courseCode", HttpStatus.BAD_REQUEST);
+    }
+
+    try {
+      Map<String, Department> departmentMapping;
+      departmentMapping = IndividualProjectApplication.myFileDatabase.getDepartmentMapping();
+
+      if (departmentMapping == null || departmentMapping.isEmpty() ) {
+        return new ResponseEntity<>("No department exists", HttpStatus.NOT_FOUND);
+      }
+
+      Map<String, List<String>> map = new HashMap<>();
+      Map<String, Course> coursesMapping;
+      String codeStr = Integer.toString(courseCode);
+      List<String> courseList = new ArrayList<>();
+
+      for (Department department : departmentMapping.values()) {
+        if (department == null) {
+          continue;
+        }
+
+        coursesMapping = department.getCourseSelection();
+        if (coursesMapping == null || coursesMapping.isEmpty()) {
+          continue;
+        }
+
+
+        if (coursesMapping.containsKey(codeStr)) {
+          courseList.add(coursesMapping.get(codeStr).toString());
+        }
+      }
+
+      if (courseList.isEmpty()) {
+        return new ResponseEntity<>("Courses Not Found", HttpStatus.NOT_FOUND);
+      } else {
+        map.put(codeStr, courseList);
+        return new ResponseEntity<>(map, HttpStatus.OK);
+      }
     } catch (Exception e) {
       return handleException(e);
     }
@@ -431,6 +490,10 @@ public class RouteController {
       @RequestParam(COURSE_CODE) int courseCode,
       @RequestParam("count") int count) {
     try {
+      if(count < 0) {
+        return new ResponseEntity<>("Invalid count", HttpStatus.BAD_REQUEST);
+      }
+
       boolean doesCourseExists;
       doesCourseExists = retrieveCourse(deptCode, courseCode).getStatusCode() == HttpStatus.OK;
 
@@ -450,6 +513,17 @@ public class RouteController {
       return handleException(e);
     }
   }
+
+
+//  @PatchMapping(value = "/enrollStudentInCourse", produces = MediaType.APPLICATION_JSON_VALUE)
+//  public ResponseEntity<?> setEnrollmentCount (
+//      @RequestParam(DEPT_CODE) String deptCode,
+//      @RequestParam(COURSE_CODE) String courseCode){
+//    try {
+//
+//    }
+//
+//  }
 
   /**
    * Endpoint for changing the time of a course.

@@ -1,25 +1,32 @@
 package dev.coms4156.project.individualproject;
 
-import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.*;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.mockito.BDDMockito.given;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.MethodOrderer;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestMethodOrder;
+
+import org.junit.jupiter.api.*;
+import org.mockito.Mockito;
+import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.MediaType;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * the tests ensures the functionality of the RouteController.
@@ -27,14 +34,15 @@ import org.springframework.web.context.WebApplicationContext;
 @SpringBootTest
 @ContextConfiguration
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
+@AutoConfigureMockMvc
 public class RouteControllerTest {
   @Autowired
   WebApplicationContext wac;
 
-  @Autowired
-  ObjectMapper objectMapper;
+  private MockMvc mockMvc;
 
-  MockMvc mockMvc;
+  @MockBean
+  private MyFileDatabase myFileDatabase;
 
   /**
    * set up the MockMvc environment.
@@ -77,6 +85,77 @@ public class RouteControllerTest {
         .param("deptCode", "deptCode code to be not found")
         .param("courseCode", "999999"))
         .andExpect(status().isNotFound());
+  }
+
+  @Test
+  void retrieveCoursesFromAllDeptTest() throws Exception  {
+
+    String courseCode = "2500";
+    String expectedStr = "\nInstructor: Uday Menon; Location: 627 MUDD; Time: 11:40-12:55";
+
+    // case1: only one course across departments, and also
+    // test the string representation of the course
+    mockMvc.perform(get("/retrieveCourses")
+        .param("courseCode", courseCode))
+        .andExpect(status().isOk())
+        .andDo(print())
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        .andExpect(jsonPath("$", aMapWithSize(1)))
+        .andExpect(jsonPath("$['2500'][0]", equalTo(expectedStr)));
+
+    // case2: multiple courses across departments
+    courseCode = "1201";
+    String expectedStr2 =  "\nInstructor: David G Vallancourt; Location: 301 PUP; Time: 4:10-5:25";
+    String expectedStr3 = "\nInstructor: Eric Raymer; Location: 428 PUP; Time: 2:40-3:55";
+    mockMvc.perform(get("/retrieveCourses")
+            .param("courseCode", courseCode))
+        .andExpect(status().isOk())
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        .andExpect(jsonPath("$['1201']", hasSize(2)))
+        .andExpect(jsonPath("$['1201'][0]", equalTo(expectedStr2)))
+        .andExpect(jsonPath("$['1201'][1]", equalTo(expectedStr3)));
+  }
+
+  @Test
+  void retrieveCoursesFromAllDeptTestWithInvalidArgs() throws Exception {
+    String invalidCourseCode = "99999921";
+    String negativeCourseCode2 = "-1";
+
+    // case1: no course found with the given course code
+    mockMvc.perform(get("/retrieveCourses")
+            .param("courseCode", invalidCourseCode))
+        .andExpect(status().isNotFound())
+        .andExpect(content().string("Courses Not Found"));
+
+    // case2: invalid negative course code
+    mockMvc.perform(get("/retrieveCourses")
+            .param("courseCode", negativeCourseCode2))
+        .andExpect(status().isBadRequest())
+        .andExpect(content().string("Invalid courseCode"));
+
+  }
+
+  @Test
+  void retrieveCoursesFromAllDeptTestWithNullDepartment() throws Exception {
+    MyFileDatabase savedDatabase = IndividualProjectApplication.myFileDatabase;
+
+    // case1: when the department mapping is null
+    IndividualProjectApplication.myFileDatabase = myFileDatabase;
+    given(myFileDatabase.getDepartmentMapping()).willReturn(null);
+    mockMvc.perform(get("/retrieveCourses")
+            .param("courseCode", "2500"))
+        .andDo(print())
+        .andExpect(status().isNotFound())
+        .andExpect(content().string("No department exists"));
+
+    // case1: when the department mapping is empty
+    given(myFileDatabase.getDepartmentMapping()).willReturn(new HashMap<>());
+    mockMvc.perform(get("/retrieveCourses")
+            .param("courseCode", "2500"))
+        .andDo(print())
+        .andExpect(status().isNotFound())
+        .andExpect(content().string("No department exists"));
+    IndividualProjectApplication.myFileDatabase = savedDatabase;
   }
 
 
@@ -215,6 +294,14 @@ public class RouteControllerTest {
         .param("count", enrollmentCount))
         .andExpect(status().isOk())
         .andExpect(content().string(containsString("Attributed was updated successfully.")));
+
+    // check negative enrollment count
+    enrollmentCount = "-1";
+    mockMvc.perform(patch("/setEnrollmentCount")
+        .param("deptCode", deptCode)
+        .param("courseCode", courseCode)
+        .param("count", enrollmentCount))
+        .andExpect(status().isBadRequest());
   }
 
   @Test
@@ -262,3 +349,4 @@ public class RouteControllerTest {
   }
 
 }
+

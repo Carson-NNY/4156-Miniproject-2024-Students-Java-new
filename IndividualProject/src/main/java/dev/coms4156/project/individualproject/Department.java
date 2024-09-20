@@ -1,5 +1,6 @@
 package dev.coms4156.project.individualproject;
 
+
 import java.io.Serial;
 import java.io.Serializable;
 import java.util.Map;
@@ -26,7 +27,7 @@ public class Department implements Serializable {
     this.departmentChair = departmentChair;
     this.deptCode = deptCode;
     if (numberOfMajors < 0) {
-      this.numberOfMajors = 0;
+      throw new IllegalArgumentException("Invalid number of majors");
     } else {
       this.numberOfMajors = numberOfMajors;
     }

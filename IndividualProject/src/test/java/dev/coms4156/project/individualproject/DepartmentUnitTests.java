@@ -1,8 +1,5 @@
 package dev.coms4156.project.individualproject;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
 import java.util.HashMap;
 import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
@@ -11,6 +8,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ContextConfiguration;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 
 /**
@@ -61,8 +60,8 @@ public class DepartmentUnitTests {
         new Department("COMS", new HashMap<>(), "Luca Carloni", 200).getNumberOfMajors());
 
     // test invalid argument for number of majors
-    assertEquals(0,
-        new Department("COMS", new HashMap<>(), "Luca Carloni", -1).getNumberOfMajors());
+    assertThrows(IllegalArgumentException.class,
+        () -> new Department("COMS", new HashMap<>(), "Luca Carloni", -1));
   }
 
   @Test
