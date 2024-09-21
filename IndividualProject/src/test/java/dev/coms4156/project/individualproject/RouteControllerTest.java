@@ -1,16 +1,22 @@
 package dev.coms4156.project.individualproject;
 
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.Matchers.aMapWithSize;
+import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.is;
+import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static org.mockito.BDDMockito.given;
 
-
-import org.junit.jupiter.api.*;
+import java.util.HashMap;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.MethodOrderer;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestMethodOrder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -20,8 +26,6 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
-
-import java.util.HashMap;
 
 /**
  * the tests ensures the functionality of the RouteController.
@@ -55,7 +59,6 @@ public class RouteControllerTest {
     // expected result  will depend on the Database data initialized in IndividualProjectApplication
     mockMvc.perform(get("/retrieveDept")
         .param("deptCode", deptCode))
-        .andDo(print())
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.courseSelection.size()", is(8)));
 
@@ -82,8 +85,32 @@ public class RouteControllerTest {
   }
 
   @Test
-  void retrieveCoursesTest() throws Exception  {
+  void retrieveCourseTestFailedMethods() throws Exception {
 
+    final MyFileDatabase savedDatabase = IndividualProjectApplication.myFileDatabase;
+
+    // case1: when value returned by getDepartmentMapping() is null
+    IndividualProjectApplication.myFileDatabase = myFileDatabase;
+    given(myFileDatabase.getDepartmentMapping()).willReturn(null);
+
+    mockMvc.perform(get("/retrieveCourse")
+            .param("deptCode", "IEOR")
+            .param("courseCode", "2500"))
+        .andExpect(status().isNotFound())
+        .andExpect(content().string("Department Not Found"));
+
+    // case1: when the department mapping is empty
+    given(myFileDatabase.getDepartmentMapping()).willReturn(new HashMap<>());
+    mockMvc.perform(get("/retrieveCourses")
+            .param("deptCode", "IEOR")
+            .param("courseCode", "2500"))
+        .andExpect(status().isNotFound())
+        .andExpect(content().string("No department exists"));
+    IndividualProjectApplication.myFileDatabase = savedDatabase;
+  }
+
+  @Test
+  void retrieveCoursesTest() throws Exception  {
     String courseCode = "2500";
     String expectedStr = "\nInstructor: Uday Menon; Location: 627 MUDD; Time: 11:40-12:55";
 
@@ -92,7 +119,6 @@ public class RouteControllerTest {
     mockMvc.perform(get("/retrieveCourses")
         .param("courseCode", courseCode))
         .andExpect(status().isOk())
-        .andDo(print())
         .andExpect(content().contentType(MediaType.APPLICATION_JSON))
         .andExpect(jsonPath("$", aMapWithSize(1)))
         .andExpect(jsonPath("$['2500'][0]", equalTo(expectedStr)));
@@ -123,14 +149,13 @@ public class RouteControllerTest {
 
   @Test
   void retrieveCoursesTestWithNullDepartment() throws Exception {
-    MyFileDatabase savedDatabase = IndividualProjectApplication.myFileDatabase;
+    final MyFileDatabase savedDatabase = IndividualProjectApplication.myFileDatabase;
 
     // case1: when the department mapping is null
     IndividualProjectApplication.myFileDatabase = myFileDatabase;
     given(myFileDatabase.getDepartmentMapping()).willReturn(null);
     mockMvc.perform(get("/retrieveCourses")
             .param("courseCode", "2500"))
-        .andDo(print())
         .andExpect(status().isNotFound())
         .andExpect(content().string("No department exists"));
 
@@ -138,7 +163,6 @@ public class RouteControllerTest {
     given(myFileDatabase.getDepartmentMapping()).willReturn(new HashMap<>());
     mockMvc.perform(get("/retrieveCourses")
             .param("courseCode", "2500"))
-        .andDo(print())
         .andExpect(status().isNotFound())
         .andExpect(content().string("No department exists"));
     IndividualProjectApplication.myFileDatabase = savedDatabase;
@@ -158,7 +182,6 @@ public class RouteControllerTest {
 
     mockMvc.perform(get("/getMajorCountFromDept")
             .param("deptCode", deptCode))
-        .andDo(print())
         .andExpect(status().isNotFound())
         .andExpect(content().string("Department Not Found"));
   }
@@ -281,13 +304,82 @@ public class RouteControllerTest {
         .andExpect(status().isOk())
         .andExpect(content().string(containsString("Attributed was updated successfully.")));
 
-    // check negative enrollment count
+    // check negative enrollment count or invalid input
     enrollmentCount = "-1";
     mockMvc.perform(patch("/setEnrollmentCount")
         .param("deptCode", deptCode)
         .param("courseCode", courseCode)
         .param("count", enrollmentCount))
         .andExpect(status().isBadRequest());
+  }
+
+  @Test
+  void enrollStudentInCourseTest() throws Exception {
+    String deptCode = "ECON";
+    String courseCode = "1105";
+    String enrollmentCount = "110";
+
+    mockMvc.perform(patch("/setEnrollmentCount")
+            .param("deptCode", deptCode)
+            .param("courseCode", courseCode)
+            .param("count", enrollmentCount))
+        .andExpect(status().isOk())
+        .andExpect(content().string(containsString("Attributed was updated successfully.")));
+
+    mockMvc.perform(patch("/enrollStudentInCourse")
+            .param("deptCode", deptCode)
+            .param("courseCode", courseCode))
+        .andExpect(status().isOk())
+        .andExpect(content().string(containsString("Student has been enrolled successfully.")));
+
+    // check if the actual enrolled student count is updated
+    mockMvc.perform(get("/retrieveCourse")
+            .param("deptCode", deptCode)
+            .param("courseCode", courseCode))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.enrolledStudentCount", is(111)));
+  }
+
+  @Test
+  void enrollStudentInCourseTestFailed() throws Exception {
+    // first set the enrollmentCount to 210 (which is the capacity of the course)
+    String deptCode = "ECON";
+    String courseCode = "1105";
+    String enrollmentCount = "210";
+    mockMvc.perform(patch("/setEnrollmentCount")
+            .param("deptCode", deptCode)
+            .param("courseCode", courseCode)
+            .param("count", enrollmentCount))
+        .andExpect(status().isOk())
+        .andExpect(content().string(containsString("Attributed was updated successfully.")));
+
+    mockMvc.perform(patch("/enrollStudentInCourse")
+            .param("deptCode", deptCode)
+            .param("courseCode", courseCode))
+        .andExpect(status().isConflict())
+        .andExpect(content()
+            .string(containsString("Student has not been enrolled due to exceeding capacity.")));
+  }
+
+  @Test
+  void enrollStudentInCourseTestNotFound() throws Exception {
+    String deptCode = "ECON";
+    String courseCode = "9999999";
+
+    // case: course not found
+    mockMvc.perform(patch("/enrollStudentInCourse")
+            .param("deptCode", deptCode)
+            .param("courseCode", courseCode))
+        .andExpect(status().isNotFound())
+        .andExpect(content().string(containsString("Course Not Found")));
+
+    deptCode = "ECONNNN";
+    courseCode = "1105";
+    mockMvc.perform(patch("/enrollStudentInCourse")
+            .param("deptCode", deptCode)
+            .param("courseCode", courseCode))
+        .andExpect(status().isNotFound())
+        .andExpect(content().string(containsString("Course Not Found")));
   }
 
   @Test
@@ -300,7 +392,6 @@ public class RouteControllerTest {
         .param("deptCode", deptCode)
         .param("courseCode", courseCode)
         .param("time", newTime))
-        .andDo(print())
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.course.courseTimeSlot", is(newTime)));
   }
