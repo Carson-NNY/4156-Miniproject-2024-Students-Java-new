@@ -1,0 +1,8 @@
+the use of mockMvc:
+    1. https://docs.spring.io/spring-framework/reference/testing/spring-mvc-test-framework/server-defining-expectations.html
+    2. https://docs.spring.io/spring-framework/docs/3.2.x/javadoc-api/org/springframework/test/web/servlet/result/MockMvcResultMatchers.html#jsonPath(java.lang.String,%20org.hamcrest.Matcher)
+    3. https://goessner.net/articles/JsonPath/
+    4. https://www.baeldung.com/bdd-mockito
+    5. https://docs.spring.io/spring-boot/api/java/org/springframework/boot/test/mock/mockito/MockBean.html
+    6. https://stackoverflow.com/questions/37344471/failed-to-retrieve-platformtransactionmanager-for-transactional-test-for-test-c
+    7. https://salithachathuranga94.medium.com/unit-and-integration-testing-in-spring-boot-micro-service-901fc53b0dff
