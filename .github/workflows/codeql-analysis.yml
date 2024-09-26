@@ -27,9 +27,6 @@ jobs:
         with:
           distribution: 'temurin'
           java-version: 17
-      - name: download maven wrapper jar
-        run: ./mvnw --version
-        working-directory: IndividualProject
 
       - name: Initialize CodeQL
         uses: github/codeql-action/init@v3
