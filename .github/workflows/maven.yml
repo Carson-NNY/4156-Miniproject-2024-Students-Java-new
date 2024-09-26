@@ -8,10 +8,9 @@
 
 name:  COMS 4156 project CICD flow
 
-
 on:
   push:
-    branches: [ "main"]
+    branches: [ "main", "l3_CICD" ]
   pull_request:
     branches: [ "main" ]
 

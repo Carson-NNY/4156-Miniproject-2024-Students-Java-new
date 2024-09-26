@@ -2,9 +2,9 @@ name: CodeQL
 
 on:
   push:
-    branches:
-      - main
+    branches: [ "main", "l3_CICD"]
   pull_request:
+    branches: [ "main" ]
   schedule:
     - cron: '56 5 * * 1'
   workflow_call:
@@ -29,6 +29,7 @@ jobs:
           java-version: 17
       - name: download maven wrapper jar
         run: ./mvnw --version
+        working-directory: IndividualProject
 
       - name: Initialize CodeQL
         uses: github/codeql-action/init@v3
