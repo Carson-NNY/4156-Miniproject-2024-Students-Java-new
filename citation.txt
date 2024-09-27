@@ -15,3 +15,4 @@ Format for writing README file: https://github.com/griffinnewbold/COMS-4156-Serv
         1. Viewing the Client App Repository
         2. Building and Running a Local Instance
         3. Running Tests
+        4. Endpoints

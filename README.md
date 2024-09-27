@@ -26,3 +26,25 @@ Windows but the Maven README has instructions for both Windows and Mac):
 
 ### GET /   /index   or /home
 - Expected Input Parameters: N/A
+- Expected Output: Introduction to the service and provided Postman link
+- Upon Success: The string returned: Welcome, in order to make an API call direct your browser or Postman to an endpoint This can be done using the following format:  http:127.0.0.1:8080/endpoint?arg=value
+- Upon Failure: N/A
+
+### GET /retrieveDept
+- Expected Input Parameters: deptCode(String)
+- Expected Output: A JSON object containing the following fields:
+  - departmentChair (String): The name of the department chair
+  - deptCode (String): The department code
+  - numberOfMajors (int): The number of majors in the department
+  - courseSelection (list):
+    - enrolledStudentCount (int): The number of students enrolled in the course
+    - courseLocation (String): The location of the course
+    - instructorName (String): The name of the instructor
+    - courseTimeSlot (String): The time slot of the course
+    - courseFull (boolean): Whether the course is full
+    - capacity (int): The capacity of the course
+- Searches within on the database for the specified department code.
+- Upon Success: HTTP 200 Status Code is returned along with the department contents in a JSON structure.
+- Upon Failure: 
+  - HTTP 404 Status Code with "Department Not Found." If the specified document does not exist.
+  - HTTP 500 Status Code if an error occurs on the Server side.
