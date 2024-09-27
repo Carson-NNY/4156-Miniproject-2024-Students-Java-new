@@ -6,3 +6,12 @@ the use of mockMvc:
     5. https://docs.spring.io/spring-boot/api/java/org/springframework/boot/test/mock/mockito/MockBean.html
     6. https://stackoverflow.com/questions/37344471/failed-to-retrieve-platformtransactionmanager-for-transactional-test-for-test-c
     7. https://salithachathuranga94.medium.com/unit-and-integration-testing-in-spring-boot-micro-service-901fc53b0dff
+
+Github action maven.yml:
+    1. demo maven.yml file in the lecture.
+
+Format for writing README file: https://github.com/griffinnewbold/COMS-4156-Service?tab=readme-ov-file
+    - Items referenced:
+        1. Viewing the Client App Repository
+        2. Building and Running a Local Instance
+        3. Running Tests
