@@ -99,6 +99,13 @@ public class DepartmentUnitTests {
     assertEquals(0, testDepartment2.getNumberOfMajors());
   }
 
+  @Test
+  void setNumberOfMajorsTest() {
+    testDepartment.setNumberOfMajors(300);
+    assertEquals(300, testDepartment.getNumberOfMajors());
+
+    assertThrows(IllegalArgumentException.class, () -> testDepartment.setNumberOfMajors(-1));
+  }
 
   @Test
   void addCourseTest() {

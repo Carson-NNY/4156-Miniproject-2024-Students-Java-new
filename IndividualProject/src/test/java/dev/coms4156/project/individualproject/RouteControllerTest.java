@@ -68,6 +68,29 @@ public class RouteControllerTest {
   }
 
   @Test
+  void retrieveDepartmentNotFoundTest() throws Exception{
+
+    final MyFileDatabase savedDatabase = IndividualProjectApplication.myFileDatabase;
+
+    // case1: when value returned by getDepartmentMapping() is null
+    IndividualProjectApplication.myFileDatabase = myFileDatabase;
+    given(myFileDatabase.getDepartmentMapping()).willReturn(null);
+
+    mockMvc.perform(get("/retrieveDept")
+            .param("deptCode", "IEOR"))
+        .andExpect(status().isNotFound())
+        .andExpect(content().string("Department Not Found"));
+
+    // case2: when the department mapping is empty
+    given(myFileDatabase.getDepartmentMapping()).willReturn(new HashMap<>());
+    mockMvc.perform(get("/retrieveDept")
+            .param("deptCode", "IEOR"))
+        .andExpect(status().isNotFound())
+        .andExpect(content().string("Department Not Found"));
+    IndividualProjectApplication.myFileDatabase = savedDatabase;
+  }
+
+  @Test
   public void retrieveCourseTest() throws Exception {
     String deptCode = "IEOR";
     String courseCode = "2500";
@@ -168,6 +191,26 @@ public class RouteControllerTest {
     IndividualProjectApplication.myFileDatabase = savedDatabase;
   }
 
+
+  @Test
+  void isCourseFullTest() throws Exception {
+    String deptCode = "CHEM";
+    String courseCode = "1403";
+
+    mockMvc.perform(get("/isCourseFull")
+        .param("deptCode", deptCode)
+        .param("courseCode", courseCode))
+        .andExpect(status().isOk())
+        .andExpect(content().string("false"));
+
+    // case: not found the course
+    courseCode = "140333";
+    mockMvc.perform(get("/isCourseFull")
+        .param("deptCode", deptCode)
+        .param("courseCode", courseCode))
+        .andExpect(status().isNotFound())
+        .andExpect(content().string("Course Not Found"));
+  }
 
   @Test
   public void getMajorCtFromDeptTest() throws Exception {

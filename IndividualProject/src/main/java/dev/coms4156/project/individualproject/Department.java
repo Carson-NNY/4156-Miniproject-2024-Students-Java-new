@@ -77,6 +77,20 @@ public class Department implements Serializable {
   }
 
   /**
+   * set the number of majors in the department. throws an exception
+   * if the number of majors provided is invalid.
+   *
+   * @param numberOfMajors The number of majors to be set.
+   */
+  public void setNumberOfMajors(int numberOfMajors) {
+    if (numberOfMajors < 0) {
+      throw new IllegalArgumentException("Invalid number of majors");
+    } else {
+      this.numberOfMajors = numberOfMajors;
+    }
+  }
+
+  /**
    * Adds a new course to the department's course selection.
    *
    * @param courseId The ID of the course to add.
