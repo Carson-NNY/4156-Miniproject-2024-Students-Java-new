@@ -68,7 +68,6 @@ public class RouteController {
    *
    * @param courseCode A {@code int} representing the course the user wishes
    *                   to retrieve.
-   *
    * @return           A {@code ResponseEntity} object containing either the details of the
    *                   course and an HTTP 200 response or, an appropriate message indicating the
    *                   proper response.
