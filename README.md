@@ -48,3 +48,239 @@ Windows but the Maven README has instructions for both Windows and Mac):
 - Upon Failure: 
   - HTTP 404 Status Code with "Department Not Found." If the specified document does not exist.
   - HTTP 500 Status Code if an error occurs on the Server side.
+
+### GET /retrieveCourse
+- Expected Input Parameters:
+    - deptCode (String): The department code.
+    - courseCode (String): The course code.
+- Expected Output: A JSON object containing the following fields:
+    - enrolledStudentCount (int): The number of students enrolled in the course.
+    - courseLocation (String): The location of the course.
+    - instructorName (String): The name of the instructor teaching the course.
+    - courseTimeSlot (String): The time slot when the course.
+    - courseFull (boolean): Indicates whether the course has reached its capacity.
+    - capacity (int): The total capacity of the course.
+- This endpoint searches the database for a course within a specific department based on the provided deptCode and courseCode. It returns the information about the course if found.
+- Upon Success: An HTTP 200 Status Code is returned, along with the course details in a JSON structure.
+- Upon Failure:
+    - HTTP 404 Status Code with "Department Not Found" if the specified department code does not exist.
+    - HTTP 404 Status Code with "Course Not Found" if the course not found
+    - HTTP 500 Status Code if an error occurs on the server side.
+
+### GET /retrieveCourses
+- Expected Input Parameters:
+    - courseCode (String): The course code.
+- Expected Output: A JSON object containing the following:
+    - courseCode (String): The course code.
+    - A list of string representations of courses from all departments with the following format for each course:
+        - "Instructor: ...; Location: ...; Time: ..."
+- This endpoint displays the string representation of the requested courses from all departments or displays the appropriate error message in response to the request.
+- Upon Success: An HTTP 200 Status Code is returned, along with a JSON object containing the course details from all departments.
+- Upon Failure:
+    - HTTP 404 Status Code with "Courses Not Found" if no course is found.
+    - HTTP 500 Status Code if an error occurs on the server side.
+
+### GET /isCourseFull
+- Expected Input Parameters:
+    - deptCode (String): The department code.
+    - courseCode (String): The course code.
+- Expected Output: A JSON object containing a boolean value indicating whether the course has reached its enrollment capacity.
+- This endpoint checks if the course has at least reached its enrollment capacity in the specified department based on the provided deptCode and courseCode.
+- Upon Success: An HTTP 200 Status Code is returned, along with a boolean value (`true` if the course is full, `false` otherwise).
+- Upon Failure:
+    - HTTP 404 Status Code with "Course Not Found" if the course does not exist in the specified department.
+    - HTTP 500 Status Code if an error occurs on the server side.
+
+### GET /getMajorCountFromDept
+- Expected Input Parameters:
+    - deptCode (String): The department code.
+- Expected Output: A JSON object containing the following:
+    - numberOfMajors (int): The number of majors in the specified department.
+- This endpoint retrieves the number of majors in the specified department based on the provided deptCode.
+- Upon Success: An HTTP 200 Status Code is returned, along with the number of majors in a JSON structure.
+- Upon Failure:
+    - HTTP 404 Status Code with "Department Not Found" if the specified department code does not exist.
+    - HTTP 500 Status Code if an error occurs on the server side.
+
+### GET /idDeptChair
+- Expected Input Parameters:
+    - deptCode (String): The department code.
+- Expected Output: A JSON object containing the following:
+    - departmentChair (String): The name of the department chair for the specified department.
+- This endpoint displays the department chair for the specified department based on the provided deptCode.
+- Upon Success: An HTTP 200 Status Code is returned, along with the department chair of the specified department in a JSON structure.
+- Upon Failure:
+    - HTTP 404 Status Code with "Department Not Found" if the specified department code does not exist.
+    - HTTP 500 Status Code if an error occurs on the server side.
+
+### GET /findCourseLocation
+- Expected Input Parameters:
+    - deptCode (String): The department code.
+    - courseCode (String): The course code.
+- Expected Output: A JSON object containing the following:
+    - location (String): The location of the specified course.
+- This endpoint displays the location of the specified course based on the provided deptCode and courseCode.
+- Upon Success: An HTTP 200 Status Code is returned, along with the location of the course in a JSON structure.
+- Upon Failure:
+    - HTTP 404 Status Code with "Course Not Found" if the specified course does not exist.
+    - HTTP 500 Status Code if an error occurs on the server side.
+
+### GET /findCourseInstructor
+- Expected Input Parameters:
+    - deptCode (String): The department code.
+    - courseCode (String): The course code.
+- Expected Output: A JSON object containing the following:
+    - instructor (String): The name of the instructor for the specified course.
+- This endpoint displays the instructor of the specified course based on the provided deptCode and courseCode.
+- Upon Success: An HTTP 200 Status Code is returned, along with the course instructor in a JSON structure.
+- Upon Failure:
+    - HTTP 404 Status Code with "Course Not Found" if the specified course does not exist.
+    - HTTP 500 Status Code if an error occurs on the server side.
+
+### GET /findCourseTime
+- Expected Input Parameters:
+    - deptCode (String): The department code.
+    - courseCode (String): The course code.
+- Expected Output: A JSON object containing the following:
+    - courseTime (String): The time slot when the specified course meets.
+- This endpoint displays the time the specified course meets at, based on the provided deptCode and courseCode.
+- Upon Success: An HTTP 200 Status Code is returned, along with the course timeslot in a JSON structure.
+- Upon Failure:
+    - HTTP 404 Status Code with "Course Not Found" if the specified course does not exist.
+    - HTTP 500 Status Code if an error occurs on the server side.
+
+### PATCH /addMajorToDept
+- Expected Input Parameters:
+    - deptCode (String): The department code.
+- Expected Output: A JSON object containing the updated department details:
+    - departmentChair (String): The name of the department chair.
+    - deptCode (String): The department code.
+    - numberOfMajors (int): The updated number of majors in the department.
+    - courseSelection (list): A list of courses with the following fields for each course:
+        - enrolledStudentCount (int): The number of students enrolled in the course.
+        - courseLocation (String): The location of the course.
+        - instructorName (String): The name of the instructor teaching the course.
+        - courseTimeSlot (String): The time slot for the course.
+        - courseFull (boolean): Indicates whether the course has reached its capacity.
+        - capacity (int): The total capacity of the course.
+- This endpoint attempts to add a student to the specified department. 
+- Upon Success: An HTTP 200 Status Code is returned, along with the updated department details in a JSON structure.
+- Upon Failure:
+    - HTTP 404 Status Code with "Department Not Found" if the specified department code does not exist.
+    - HTTP 500 Status Code if an error occurs on the server side.
+
+### PATCH /removeMajorFromDept
+- Expected Input Parameters:
+    - deptCode (String): The department code.
+- Expected Output: A JSON structure containing the updated department details:
+    - departmentChair (String): The name of the department chair.
+    - deptCode (String): The department code.
+    - numberOfMajors (int): The updated number of majors in the department after removing a student.
+    - courseSelection (list): A list of courses with the following fields for each course:
+        - enrolledStudentCount (int): The number of students enrolled in the course.
+        - courseLocation (String): The location of the course.
+        - instructorName (String): The name of the instructor teaching the course.
+        - courseTimeSlot (String): The time slot for the course.
+        - courseFull (boolean): Indicates whether the course has reached its capacity.
+        - capacity (int): The total capacity of the course.
+- This endpoint attempts to remove a student from the specified department. It updates the number of majors in the department and returns the updated department details.
+- Upon Success: An HTTP 200 Status Code is returned, along with the updated department details in a JSON structure.
+- Upon Failure:
+    - HTTP 404 Status Code with "Department Not Found" if the specified department code does not exist.
+    - HTTP 500 Status Code if an error occurs on the server side.
+
+### PATCH /dropStudentFromCourse
+- Expected Input Parameters:
+    - deptCode (String): The department code.
+    - courseCode (String): The course code within the department.
+- Expected Output: A JSON structure containing the following:
+    - message (String): A message indicating whether the student was successfully dropped from the course.
+- This endpoint attempts to drop a student from the specified course within the given department.
+- Upon Success: An HTTP 200 Status Code is returned with a message "Student has been dropped" in a JSON structure if the operation is successful.
+- Upon Failure:
+    - HTTP 400 Status Code with "Student has not been dropped" if the operation fails.
+    - HTTP 404 Status Code with "Course Not Found" if the specified course does not exist.
+    - HTTP 500 Status Code if an error occurs on the server side.
+
+### PATCH /setEnrollmentCount
+- Expected Input Parameters:
+    - deptCode (String): The department code.
+    - courseCode (String): The course code within the department.
+    - count (int): The new enrollment count for the specified course.
+- Expected Output: A JSON structure or message indicating whether the enrollment count was successfully updated.
+- This endpoint updates the enrollment count for a specified course within a department. The course is identified by the provided deptCode and courseCode, and the count is updated to the provided value.
+- Upon Success: An HTTP 200 Status Code is returned with the message "Attributed was updated successfully." in a JSON structure.
+- Upon Failure:
+    - HTTP 400 Status Code with "Invalid count" if the provided enrollment count is less than 0.
+    - HTTP 404 Status Code with "Course Not Found" if the specified course does not exist.
+    - HTTP 500 Status Code if an error occurs on the server side.
+
+### PATCH /enrollStudentInCourse
+- Expected Input Parameters:
+    - deptCode (String): The department code.
+    - courseCode (String): The course code for enrolling the student.
+- Expected Output: A JSON structure containing the following:
+    - message (String): A message indicating whether the student was successfully enrolled or if the capacity was exceeded.
+- This endpoint handles enrolling a student in the specified course based on the provided deptCode and courseCode.
+- Upon Success: An HTTP 200 Status Code is returned with the message "Student has been enrolled successfully" in a JSON structure.
+- Upon Failure:
+    - HTTP 409 Status Code with "Student has not been enrolled due to exceeding capacity" if the course capacity is exceeded.
+    - HTTP 404 Status Code with "Course Not Found" if the specified course does not exist.
+    - HTTP 500 Status Code if an error occurs on the server side.
+
+### PATCH /changeCourseTime
+- Expected Input Parameters:
+    - deptCode (String): The department code containing the course.
+    - courseCode (String): The course code for which the time is being changed.
+    - time (String): The new time for the course.
+- Expected Output: A JSON structure containing the updated course details:
+    - course: A JSON object representing the updated course with the following fields:
+        - enrolledStudentCount (int): The number of students enrolled in the course.
+        - courseLocation (String): The location of the course.
+        - instructorName (String): The name of the instructor teaching the course.
+        - courseTimeSlot (String): The updated time slot for the course.
+        - courseFull (boolean): Indicates whether the course is full.
+        - capacity (int): The total capacity of the course.
+- This endpoint handles changing the time of a course based on the provided deptCode, courseCode, and new time.
+- Upon Success: An HTTP 200 Status Code is returned with the updated course details in a JSON structure.
+- Upon Failure:
+    - HTTP 404 Status Code with "Course Not Found" if the specified course does not exist.
+    - HTTP 500 Status Code if an error occurs on the server side.
+
+### PATCH /changeCourseTeacher
+- Expected Input Parameters:
+    - deptCode (String): The department code containing the course.
+    - courseCode (String): The course code for which the instructor is being changed.
+    - teacher (String): The new instructor for the course.
+- Expected Output: A JSON structure containing the updated course details:
+    - course: A JSON object representing the updated course with the following fields:
+        - enrolledStudentCount (int): The number of students enrolled in the course.
+        - courseLocation (String): The location of the course.
+        - instructorName (String): The updated instructor name for the course.
+        - courseTimeSlot (String): The time slot for the course.
+        - courseFull (boolean): Indicates whether the course is full.
+        - capacity (int): The total capacity of the course.
+- This endpoint handles changing the instructor of a course based on the provided deptCode, courseCode, and new teacher.
+- Upon Success: An HTTP 200 Status Code is returned with the updated course details in a JSON structure.
+- Upon Failure:
+    - HTTP 404 Status Code with "Course Not Found" if the specified course does not exist.
+    - HTTP 500 Status Code if an error occurs on the server side.
+
+### PATCH /changeCourseLocation
+- Expected Input Parameters:
+    - deptCode (String): The department code containing the course.
+    - courseCode (String): The course code for which the location is being changed.
+    - location (String): The new location for the course.
+- Expected Output: A JSON structure containing the updated course details:
+    - course: A JSON object representing the updated course with the following fields:
+        - enrolledStudentCount (int): The number of students enrolled in the course.
+        - courseLocation (String): The updated location for the course.
+        - instructorName (String): The name of the instructor teaching the course.
+        - courseTimeSlot (String): The time slot for the course.
+        - courseFull (boolean): Indicates whether the course is full.
+        - capacity (int): The total capacity of the course.
+- This endpoint handles changing the location of a course based on the provided deptCode, courseCode, and new location.
+- Upon Success: An HTTP 200 Status Code is returned with the updated course details in a JSON structure.
+- Upon Failure:
+    - HTTP 404 Status Code with "Course Not Found" if the specified course does not exist.
+    - HTTP 500 Status Code if an error occurs on the server side.
