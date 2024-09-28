@@ -14,7 +14,6 @@ Windows but the Maven README has instructions for both Windows and Mac):
 *   IntelliJ IDE: We recommend using IntelliJ but you are free to use any other IDE that you are comfortable with: https://www.jetbrains.com/idea/download/?section=windows
 *   To successfully run the project, you need to first run mvn spring-boot:run -Dspring-boot.run.arguments="setup" if you are using  MacOS, or mvn spring-boot:run -D"spring-boot.run.arguments=setup" if you are on Windows, and let the project initialize the database until you see "System Setup” showing up in console.
 *   If you wish to run the style checker you can with mvn checkstyle:check or mvn checkstyle:checkstyle if you wish to generate the report. The report will be generated under target folder, where you will find in a file named checkstyle-result.xml.
-*   If you wish to have a bug finder to check if there are any bugs in the code or style violations not detected by the style checker, you can use pmd check -d /Users/carson/Downloads/CS\ W4156/4156-Miniproject-2024-Students-Java  -R rulesets/java/quickstart.xml -f json, to install pmd, you may checkout this link: https://pmd.github.io/
 
 ## Running Tests
 * The unit test  are located under the directory 'src/test'. To run the tests , you must first set up the project by following step 5 in the "Building and Running a Local Instance" section.  
@@ -286,8 +285,37 @@ Windows but the Maven README has instructions for both Windows and Mac):
     - HTTP 500 Status Code if an error occurs on the server side.
 
 ## Branch Coverage Reporting
-We used JaCoCo to perform branch analysis to see the branch coverage of the relevant code within the code base. Image below demonstrates the output.
+- We used JaCoCo to perform branch analysis to see the branch coverage of the relevant code within the code base. Image below demonstrates the output.
     - follow the steps below to generate the report:
         - mvn clean test
         - mvn jacoco:report
         - open target/site/jacoco/index.html
+
+## Static Code Analysis
+- We used PMD to perform static analysis on our codebase
+  - Command: pmd check -d </usr/src>  -R rulesets/java/quickstart.xml -f json, to install pmd, you may checkout this link: https://pmd.github.io/
+
+## Continuous Integration Report
+- This repository using GitHub Actions to perform continous integration, to view the latest results go to the following link: https://github.com/Carson-NNY/4156-Miniproject-2024-Students-Java-new/actions/workflows/maven.yml
+- Under 'X workflow runs' click on the latest workflow run to read the logs
+
+## Tools used 
+- Maven Package Manager
+- Spring Boot
+- GitHub Actions CI 
+  - This is enabled via the "Actions" tab on GitHub.
+- Checkstyle
+  - We use Checkstyle for code reporting. Note that Checkstyle does NOT get run as part of the CI pipeline.
+- PMD
+  - PMD is used to perform static code analysis.
+- JUnit
+  - We run JUnit tests as part of the CI pipeline.
+- JaCoCo
+  - We use JaCoCo to check branch coverage
+- Postman
+  - We use Postman to test the all the endpoints mentioned above.
+- Google Cloud Platform
+  - We use Google Cloud Platform for the deployment.
+- IntelliJ
+  - We use IntelliJ as our IDE for development.
+- 

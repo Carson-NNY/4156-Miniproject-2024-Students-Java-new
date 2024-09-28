@@ -17,3 +17,5 @@ Format for writing README file: https://github.com/griffinnewbold/COMS-4156-Serv
         3. Running Tests
         4. Endpoints
         5. Branch Coverage Reporting
+        6. Continuous Integration Report
+        7. Tools used
