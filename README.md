@@ -1,4 +1,4 @@
-# Welcome Students of 4156
+# Introduction
 
 This is the GitHub repository for the Individual Project for COMS 4156 Advanced Software Engineering.
 The author of this repository is Guanhong Liu. 
