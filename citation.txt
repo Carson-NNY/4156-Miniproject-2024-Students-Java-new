@@ -16,3 +16,4 @@ Format for writing README file: https://github.com/griffinnewbold/COMS-4156-Serv
         2. Building and Running a Local Instance
         3. Running Tests
         4. Endpoints
+        5. Branch Coverage Reporting

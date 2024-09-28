@@ -284,3 +284,11 @@ Windows but the Maven README has instructions for both Windows and Mac):
 - Upon Failure:
     - HTTP 404 Status Code with "Course Not Found" if the specified course does not exist.
     - HTTP 500 Status Code if an error occurs on the server side.
+
+## Branch Coverage Reporting
+We used JaCoCo to perform branch analysis to see the branch coverage of the relevant code within the code base. Image below demonstrates the output.
+    - follow the steps below to generate the report:
+        - mvn clean test
+        - mvn jacoco:report
+        - open target/site/jacoco/index.html
+![Screenshot 2024-09-27 at 8.42.34 PM.png](../../../../../var/folders/76/w3pxqd117yxcf949f_nl1kn80000gn/T/TemporaryItems/NSIRD_screencaptureui_amDrZm/Screenshot%202024-09-27%20at%208.42.34%E2%80%AFPM.png)
