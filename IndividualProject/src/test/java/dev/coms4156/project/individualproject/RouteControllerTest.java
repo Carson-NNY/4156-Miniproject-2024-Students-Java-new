@@ -68,7 +68,7 @@ public class RouteControllerTest {
   }
 
   @Test
-  void retrieveDepartmentNotFoundTest() throws Exception{
+  void retrieveDepartmentNotFoundTest() throws Exception {
 
     final MyFileDatabase savedDatabase = IndividualProjectApplication.myFileDatabase;
 

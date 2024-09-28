@@ -318,4 +318,3 @@ Windows but the Maven README has instructions for both Windows and Mac):
   - We use Google Cloud Platform for the deployment.
 - IntelliJ
   - We use IntelliJ as our IDE for development.
-- 
